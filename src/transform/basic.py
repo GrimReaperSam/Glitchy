@@ -4,7 +4,7 @@ import numpy as np
 
 
 class Flip(Operation):
-    def __init__(self, axis):
+    def __init__(self, axis=0):
         self.axis = axis
 
     def run(self, image):
