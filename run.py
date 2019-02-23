@@ -1,7 +1,10 @@
-from scipy.misc import imread, imsave
-from src.pixel_sorting.basic import Sort
+from imageio import imread, imwrite
+from src.pixel_sorting import *
 
 if __name__ == '__main__':
     image = imread('resources/scene.jpg')
-    result = Sort(2, True).run(image)
-    imsave('results/result.jpg', result)
+
+    sort = SortInterval(sort_type='maximum', interval_size=100)
+    result = sort.run(image)
+
+    imwrite('results/result.jpg', result)

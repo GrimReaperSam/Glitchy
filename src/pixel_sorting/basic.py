@@ -1,7 +1,6 @@
-from glitch_operators import Operation, NOP
-from transform.basic import Flip
-
 import numpy as np
+
+from glitch_operators import Operation
 
 
 class Sort(Operation):
