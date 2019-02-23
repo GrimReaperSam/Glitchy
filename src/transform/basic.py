@@ -21,7 +21,7 @@ class Rot90(Operation):
 
 class ApplyRot90(Operation):
     def __init__(self, operation):
-        self.operation = Chain(Rot90(), operation, Rot90())
+        self.operation = Chain(Rot90(times=1), operation, Rot90(times=-1))
 
     def run(self, image):
         return self.operation.run(image)

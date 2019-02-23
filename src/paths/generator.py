@@ -97,7 +97,7 @@ def rectangles(size):
         max_y -= 1
 
 
-def random(size, distribution=None, start=None):
+def rand(size, distribution=None, start=None):
     def path_iter(start_point):
         x, y = start_point
         while True:

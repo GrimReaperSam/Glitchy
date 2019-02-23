@@ -1,7 +1,7 @@
 import random
 import numpy as np
 
-from ..paths import PATHS
+from ..paths import PATHS, KEYS
 from glitch_operators import Operation
 
 
@@ -35,21 +35,24 @@ class SortInterval(Operation):
 
 
 class SortPath(Operation):
-    def __init__(self, path='horizontal', path_kwargs=None):
+    def __init__(self, path='horizontal', path_kwargs=None, key='intensity'):
         self.path = PATHS[path]
         self.path_kwargs = path_kwargs if path_kwargs is not None else {}
+        self.key = KEYS[key]
 
     def run(self, image):
         size = image.shape[:2]
-        result = np.zeros_like(image)
+        result = np.copy(image)
         path_iterator = self.path(size, **self.path_kwargs)
+        keys = self.key(image)
 
         for row_iter in path_iterator:
             items = np.array(list(row_iter))
             if items.size == 0:
                 continue
             subpart = image[items[:, 0], items[:, 1]]
-            indices = np.argsort(evaluate(subpart, 'intensity'))
-            result[items[:, 0], items[:, 1]] = subpart[indices]
+            subpartKey = keys[items[:, 0], items[:, 1]]
+            indices = np.argsort(subpartKey)
+            result[items[:, 0], items[:, 1]] = subpart[indices, :]
 
         return result
