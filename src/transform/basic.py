@@ -1,6 +1,6 @@
 import numpy as np
 
-from glitch_operators import Operation
+from glitch_operators import Operation, Chain
 
 
 class Flip(Operation):
@@ -18,3 +18,10 @@ class Rot90(Operation):
     def run(self, image):
         return np.rot90(image, self.times)
 
+
+class ApplyRot90(Operation):
+    def __init__(self, operation):
+        self.operation = Chain(Rot90(), operation, Rot90())
+
+    def run(self, image):
+        return self.operation.run(image)
