@@ -4,20 +4,20 @@ import numpy as np
 from glitch_operators import Operation
 
 
-def evaluate(pixels, sort_type):
-    if sort_type == 'intensity':
+def evaluate(pixels, sort_fn):
+    if sort_fn == 'intensity':
         return pixels.sum(axis=1)
-    elif sort_type == 'maximum':
+    elif sort_fn == 'maximum':
         return pixels.max(axis=1)
-    elif sort_type == 'minimum':
+    elif sort_fn == 'minimum':
         return pixels.min(axis=1)
     else:
-        pass
+        return sort_fn(pixels)
 
 
 class SortInterval(Operation):
-    def __init__(self, sort_type='intensity', interval_size=50):
-        self.sort_type = sort_type
+    def __init__(self, sort_fn='intensity', interval_size=50):
+        self.sort_fn = sort_fn
         self.interval_size = interval_size
 
     def run(self, image):
@@ -27,7 +27,7 @@ class SortInterval(Operation):
         while end < flat.size:
             end = min(random.randint(start, start + self.interval_size), flat.size)
             curr_pixels = flat[start:end]
-            indices = np.argsort(evaluate(curr_pixels, self.sort_type))
+            indices = np.argsort(evaluate(curr_pixels, self.sort_fn))
             flat[start:end] = curr_pixels[indices]
             start = end
         return flat.reshape(image.shape)

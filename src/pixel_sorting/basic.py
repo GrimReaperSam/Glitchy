@@ -19,7 +19,7 @@ class SortRgbSum(Operation):
         self.channels = channels
 
     def run(self, image):
-        flat = np.reshape(image, (-1, 1, image.shape[2])).squeeze()
+        flat = np.reshape(image, (-1, image.shape[2])).squeeze()
         avg_img = np.sum(image[:, :, self.channels], axis=2)
         if self.axis:
             indices = np.argsort(avg_img, axis=self.axis)
