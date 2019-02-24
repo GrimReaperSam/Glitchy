@@ -5,7 +5,7 @@ from src.transform import *
 if __name__ == '__main__':
     image = imread('resources/scene.jpg')
 
-    sort = SortPath(path='rectangles', path_kwargs={}, key='hue')
-    result = ApplyRot90(sort).run(image)
+    sort = SortPath(path='circles', path_kwargs={}, key='hue', interval=50)
+    result = sort.run(image)
 
     imwrite('results/result.jpg', result)

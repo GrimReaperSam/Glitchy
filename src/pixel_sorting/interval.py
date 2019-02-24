@@ -5,40 +5,29 @@ from ..paths import PATHS, KEYS
 from glitch_operators import Operation
 
 
-def evaluate(pixels, sort_fn):
-    if sort_fn == 'intensity':
-        return pixels.sum(axis=1)
-    elif sort_fn == 'maximum':
-        return pixels.max(axis=1)
-    elif sort_fn == 'minimum':
-        return pixels.min(axis=1)
-    else:
-        return sort_fn(pixels)
-
-
-class SortInterval(Operation):
-    def __init__(self, sort_fn='intensity', interval_size=50):
-        self.sort_fn = sort_fn
-        self.interval_size = interval_size
-
-    def run(self, image):
-        flat = image.reshape((-1, 3))
-        start = 0
-        end = 0
-        while end < flat.size:
-            end = min(random.randint(start, start + self.interval_size), flat.size)
-            curr_pixels = flat[start:end]
-            indices = np.argsort(evaluate(curr_pixels, self.sort_fn))
-            flat[start:end] = curr_pixels[indices]
-            start = end
-        return flat.reshape(image.shape)
+def get_intervals(total, interval, progressive=0., randomize=False):
+    current = 0
+    max_interval = interval
+    additive_step = max_interval * progressive
+    while current < total:
+        max_interval += additive_step
+        if randomize:
+            interval = random.randint(1, int(max_interval) + 1)
+        else:
+            interval = int(max_interval)
+        yield np.s_[current: current + interval]
+        current += interval
 
 
 class SortPath(Operation):
-    def __init__(self, path='horizontal', path_kwargs=None, key='intensity'):
+    def __init__(self, path='horizontal', path_kwargs=None, key='intensity',
+                 interval=0, progressive=0., randomize=False):
         self.path = PATHS[path]
         self.path_kwargs = path_kwargs if path_kwargs is not None else {}
         self.key = KEYS[key]
+        self.interval = interval
+        self.progressive = progressive
+        self.randomize = randomize
 
     def run(self, image):
         size = image.shape[:2]
@@ -50,9 +39,13 @@ class SortPath(Operation):
             items = np.array(list(row_iter))
             if items.size == 0:
                 continue
-            subpart = image[items[:, 0], items[:, 1]]
-            subpartKey = keys[items[:, 0], items[:, 1]]
-            indices = np.argsort(subpartKey)
-            result[items[:, 0], items[:, 1]] = subpart[indices, :]
+            jump = self.interval if self.interval != 0 else items.shape[0]
+            intervals = get_intervals(items.shape[0], jump, self.progressive, self.randomize)
+            for s in intervals:
+                subpart = image[items[s, 0], items[s, 1]]
+                subpart_key = keys[items[s, 0], items[s, 1]]
+
+                indices = np.argsort(subpart_key)
+                result[items[s, 0], items[s, 1]] = subpart[indices, :]
 
         return result

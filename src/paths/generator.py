@@ -130,14 +130,14 @@ def horizontal_random(size):
     _, height = size
     distribution = {(1, dy): 1 / 3.0 for dy in [-1, 0, 1]}
     start = [(0, y) for y in range(height)]
-    return random(size, distribution, start)
+    return rand(size, distribution, start)
 
 
 def vertical_random(size):
     width, _= size
     distribution = {(dx, 1): 1 / 3.0 for dx in [-1, 0, 1]}
     start = [(x, 0) for x in range(width)]
-    return random(size, distribution, start)
+    return rand(size, distribution, start)
 
 
 def bresenham(radius):
