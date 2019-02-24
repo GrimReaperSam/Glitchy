@@ -1,4 +1,6 @@
 import numpy as np
+from imageio import imread
+from scipy.misc import imresize
 
 from .utils import sign, is_in_bounds, weighted_random_choice
 from .cells import generate_rule, generate_ca
@@ -203,12 +205,19 @@ def filled_circles(size, radius=100):
             yield from fill_concentric_circles((x, y), radius, size=size)
 
 
+def mask(size, image_mask):
+    width, height = size
+    for x in range(width):
+        yield ((x, y) for y in range(height) if image_mask[x, y])
+
+
 def cells(size, rule_number, scale=1):
     rule = generate_rule(rule_number)
     ca = generate_ca(rule, size, scale=scale)
-    print(scale)
-    print(ca.shape)
-    print(size)
-    width, height = size
-    for x in range(width):
-        yield ((x, y) for y in range(height) if ca[x, y])
+    yield from mask(size, ca)
+
+
+def file(size, path):
+    ca = imread(path, as_gray=True).astype(np.bool)
+    ca = imresize(ca, size, 'nearest')
+    yield from mask(size, ca)

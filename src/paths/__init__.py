@@ -13,7 +13,8 @@ PATHS = {
     'vertical-random': vertical_random,
     'circles': circles,
     'filled-circles': filled_circles,
-    'cells': cells
+    'cells': cells,
+    'file': file,
 }
 
 
