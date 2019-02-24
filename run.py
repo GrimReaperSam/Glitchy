@@ -5,7 +5,8 @@ from src.glitch_operators import *
 if __name__ == '__main__':
     image = imread('resources/scene.jpg')
 
-    sort = SortPath(path='random', path_kwargs={}, key='intensity')
-    result = Tile(Channel(sort, [0, ], True), (50, 50)).run(image)
+    sort = SortPath(path='vertical', path_kwargs={}, key='intensity',
+                    interval=100, interval_kwargs={'randomize': True})
+    result = sort.run(image)
 
     imwrite('results/result.jpg', result)

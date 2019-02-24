@@ -78,9 +78,14 @@ class Channel(Operation):
 
     def run(self, image):
         result = np.copy(image)
-        if self.independent:
-            for ch in self.channels:
-                result[:, :, ch:ch+1] = self.operation.run(image[:, :, ch:ch+1])
+        if isinstance(self.operation, list):
+            assert(len(self.operation) == len(self.channels))
+            for idx, ch in enumerate(self.channels):
+                result[:, :, ch:ch + 1] = self.operation[idx].run(image[:, :, ch:ch + 1])
         else:
-            result[:, :, self.channels] = self.operation.run(image[:, :, self.channels])
+            if self.independent:
+                for ch in self.channels:
+                    result[:, :, ch:ch+1] = self.operation.run(image[:, :, ch:ch+1])
+            else:
+                result[:, :, self.channels] = self.operation.run(image[:, :, self.channels])
         return result
