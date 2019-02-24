@@ -1,6 +1,7 @@
 import numpy as np
 
 from .utils import sign, is_in_bounds, weighted_random_choice
+from .cells import generate_rule, generate_ca
 
 
 def horizontal(size):
@@ -200,3 +201,14 @@ def filled_circles(size, radius=100):
     for x in range(dx // 2, width + dx, dx):
         for y in range(dy // 2, height + dy, dy):
             yield from fill_concentric_circles((x, y), radius, size=size)
+
+
+def cells(size, rule_number, scale=1):
+    rule = generate_rule(rule_number)
+    ca = generate_ca(rule, size, scale=scale)
+    print(scale)
+    print(ca.shape)
+    print(size)
+    width, height = size
+    for x in range(width):
+        yield ((x, y) for y in range(height) if ca[x, y])
